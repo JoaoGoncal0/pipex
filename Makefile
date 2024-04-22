@@ -2,37 +2,36 @@ NAME = pipex
 
 LIBFT = libft/libft.a
 
-CC = cc
+CC = cc -Wall -Werror -Wextra
 
 RM = rm -f
 
-CFLAGS = -Wall -Werror -Wextra
+SRCS = pipex.c \
+		heredoc.c \
+		parsing.c \
+		get_next_line/get_next_line_bonus.c \
+		get_next_line/get_next_line_utils_bonus.c
 
-SRCS = 
+OBJ = $(SRCS:.c=.o)
 
-OBJS = $(SRCS:.c=.o)
+all: $(NAME)
 
-$(LIBFTT):
-		@make -s -C ./libft
-		@make bonus -s -C ./libft
+$(LIBFT):
+	@make -C ./libft
 
-all = $(NAME)
-
-$(NAME):	$(OBJS) $(LIBFT)
-			$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
+$(NAME):	$(OBJ) $(LIBFT)
+			$(CC) $(OBJ) $(LIBFT) -o $(NAME)
 			@echo "$(NAME) created"
 
-clean:		$(RM) $(OBJS)
-			@make clean -s -C ./libft
+clean:
+	@make -C ./libft fclean --no-print-directory
 
-fclean: 	clean
-			$(RM) $(NAME)
-			@$(RM) $(LIBFT)
-			@echo "$(NAME) deleted"
+fclean:		clean
+				@$(RM) $(NAME)
+				@$(RM) $(LIBFT)
+				@$(RM) *.o
+				@echo "$(NAME) deleted"
 
-re: 		fclean all
+re:			fclean all
 
-.PHONY: 	fclean all
-
-
-
+.PHONY:			start all clean fclean re

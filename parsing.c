@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 16:41:29 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/18 17:03:03 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/22 14:33:31 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	find_path(t_p *p, char **envp)
 	}
 	if (!tmp)
 		printf("Erro\n");
-	p->path = ft_split(tmp, ":");
+	p->path = ft_split(tmp, ':');
 	free(tmp);
 }
 
@@ -56,7 +56,7 @@ int	find_cmd_path(t_p *p, char **envp)
 	while (p->path[i])
 	{
 		tmp = ft_strjoin(p->path[i], "/");
-		tmp2 = ft_strjoin(tmp, p->cmd);
+		tmp2 = ft_strjoin(tmp, p->cmd_path);
 		fd = open(tmp2, O_RDONLY);
 		if (fd >= 0)
 		{
@@ -87,7 +87,7 @@ void	get_cmd(t_p *p, char *tmp)
 		i++;
 	}
 	cmd = ft_substr(tmp, 0, i);
-	p->cmd = ft_split(cmd, " ");
+	p->cmd = ft_split(cmd, ' ');
 	free(cmd);
 }
 
@@ -101,6 +101,7 @@ int	check_file_permission(const char *file)
 		return (0);
 	else
 		perror("Error\n");
+	return (0);
 }
 
 int	check_command(char *command)
