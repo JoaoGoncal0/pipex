@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 16:41:29 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/22 14:33:31 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/23 16:54:29 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,21 @@ void	free_paths(char **str)
 	free(str);
 }
 
-// Saber onde o Path esta no envp
-
 void	find_path(t_p *p, char **envp)
 {
 	int	i;
 	char *tmp;
 
 	i = 0;
+	tmp = NULL;
+	if (!envp[i])
+		err(p, "Envp not found");
 	while (envp[i])
 	{
-		if (ft_strncmp(envp[i], "PATH=/home", 10) == 0)
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+		{
 			tmp = ft_strdup(envp[i] + 5);
+		}
 		i++;
 	}
 	if (!tmp)
@@ -42,37 +45,34 @@ void	find_path(t_p *p, char **envp)
 	free(tmp);
 }
 
-// Procurar o path para o comando no envp
-
-int	find_cmd_path(t_p *p, char **envp)
+void	find_cmd_path(t_p *p, char **av, char **envp)
 {
 	char *tmp;
 	char *tmp2;
-	int fd;
 	int i;
 
 	find_path(p, envp);
+	printf("test1\n");
+	get_cmd(p, av[2]);
+	printf("test2\n");
 	i = 0;
 	while (p->path[i])
 	{
 		tmp = ft_strjoin(p->path[i], "/");
-		tmp2 = ft_strjoin(tmp, p->cmd_path);
-		fd = open(tmp2, O_RDONLY);
-		if (fd >= 0)
+		tmp2 = ft_strjoin(tmp, p->cmd[0]);
+		printf(" Comando path = %s\n", tmp2);
+		if (check_file_permission(tmp2))
 		{
+			printf("O comando valido: %s\n", tmp2);
 			p->cmd_path = ft_strdup(tmp2);
 			free(tmp);
 			free(tmp2);
-			return (0);
 		}
 		i++;
 		free(tmp);
 		free(tmp2);
 	}
-	return (1);
 }
-
-// "ls -l" devolve so o "ls"
 
 void	get_cmd(t_p *p, char *tmp)
 {
@@ -82,9 +82,11 @@ void	get_cmd(t_p *p, char *tmp)
 	i = 0;
 	while (tmp[i])
 	{
+		
 		if (tmp[i] == ' ')
 			break;
 		i++;
+		printf("%s\n", tmp);
 	}
 	cmd = ft_substr(tmp, 0, i);
 	p->cmd = ft_split(cmd, ' ');
@@ -94,11 +96,11 @@ void	get_cmd(t_p *p, char *tmp)
 int	check_file_permission(const char *file)
 {
 	if (file == NULL || *file == '\0')
-		return (1);
+		return (0);
 	if (access(file, F_OK) == 0)
-		return (0);
+		return (1);
 	if (access(file, X_OK) == 0)
-		return (0);
+		return (1);
 	else
 		perror("Error\n");
 	return (0);

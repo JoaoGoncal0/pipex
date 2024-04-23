@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 18:02:33 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/22 18:41:46 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/23 14:30:47 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct s_p
 
 void			free_paths(char **str);
 void			find_path(t_p *p, char **envp);
-int				find_cmd_path(t_p *p, char **envp);
+void			find_cmd_path(t_p *p, char **av, char **envp);
 void			get_cmd(t_p *p, char *tmp);
 int				check_file_permission(const char *file);
 int				check_command(char *command);
