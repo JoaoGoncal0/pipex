@@ -10,6 +10,7 @@ SRCS = pipex.c \
 		heredoc.c \
 		parsing.c \
 		get_next_line/get_next_line_bonus.c \
+		free_functions.c \
 		get_next_line/get_next_line_utils_bonus.c
 
 OBJ = $(SRCS:.c=.o)
@@ -24,7 +25,7 @@ $(NAME):	$(OBJ) $(LIBFT)
 			@echo "$(NAME) created"
 
 clean:
-	@make -C ./libft fclean --no-print-directory
+	@make -C ./libft clean --no-print-directory
 
 fclean:		clean
 				@$(RM) $(NAME)

@@ -6,121 +6,82 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 16:41:29 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/23 16:54:29 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/26 15:36:54 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	free_paths(char **str)
+void	init_pipex(int ac, char **av, t_p *p, char **envp)
 {
-	int	i;
-	
-	i = 0;
-	while (str[i])
-		free(str[i++]);
-	free(str);
+	if (ac < 5)
+		end_pipex(p, 1, "Wrong augments\n");
+	if (ft_strncmp(av[1], "here_doc", ft_strlen(av[1])) == 0)
+		ft_init_here_doc(p, av[2], av[ac - 1]);
+	else
+	{
+		p->infile = open(av[1], O_RDONLY);
+		if (p->infile < 0)
+			write (2, "No such file or directory\n", 26);
+		p->outfile = open(av[ac - 1], O_TRUNC | O_CREAT | O_RDWR, 0644);
+		if (p->outfile < 0)
+			end_pipex(p, 1, "Could't open the outfile");
+	}
+	p->envp = envp;
 }
 
-void	find_path(t_p *p, char **envp)
+int	find_path(t_p *p, char **envp)
 {
 	int	i;
-	char *tmp;
 
 	i = 0;
-	tmp = NULL;
-	if (!envp[i])
-		err(p, "Envp not found");
 	while (envp[i])
 	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+		if(ft_strncmp("PATH=", envp[i], 5) == 0)
 		{
-			tmp = ft_strdup(envp[i] + 5);
+			p->paths = ft_split(envp[i] + 5, ':');
+			return (0);
 		}
+		printf("o path = %s", p->paths[i]);
 		i++;
 	}
-	if (!tmp)
-		printf("Erro\n");
-	p->path = ft_split(tmp, ':');
-	free(tmp);
+	return (1);
 }
 
-void	find_cmd_path(t_p *p, char **av, char **envp)
-{
-	char *tmp;
-	char *tmp2;
-	int i;
-
-	find_path(p, envp);
-	printf("test1\n");
-	get_cmd(p, av[2]);
-	printf("test2\n");
-	i = 0;
-	while (p->path[i])
-	{
-		tmp = ft_strjoin(p->path[i], "/");
-		tmp2 = ft_strjoin(tmp, p->cmd[0]);
-		printf(" Comando path = %s\n", tmp2);
-		if (check_file_permission(tmp2))
-		{
-			printf("O comando valido: %s\n", tmp2);
-			p->cmd_path = ft_strdup(tmp2);
-			free(tmp);
-			free(tmp2);
-		}
-		i++;
-		free(tmp);
-		free(tmp2);
-	}
-}
-
-void	get_cmd(t_p *p, char *tmp)
-{
-	int i;
-	char *cmd;
-
-	i = 0;
-	while (tmp[i])
-	{
-		
-		if (tmp[i] == ' ')
-			break;
-		i++;
-		printf("%s\n", tmp);
-	}
-	cmd = ft_substr(tmp, 0, i);
-	p->cmd = ft_split(cmd, ' ');
-	free(cmd);
-}
-
-int	check_file_permission(const char *file)
-{
-	if (file == NULL || *file == '\0')
-		return (0);
-	if (access(file, F_OK) == 0)
-		return (1);
-	if (access(file, X_OK) == 0)
-		return (1);
-	else
-		perror("Error\n");
-	return (0);
-}
-
-int	check_command(char *command)
+void	get_commands(int size, t_p *p, char **commands)
 {
 	int	i;
 
+	p->commands = ft_calloc(sizeof(char *), (size - 3 + 1));
+	p->full_command = ft_calloc(sizeof(char *), (size - 3 + 1));
+	size--;
 	i = 0;
-	if (!command)
-		return (1);
-	while (command[i])
+	while ((i + 2) < size)
 	{
-		if (!(command[i] >= 'a' && command[i] <= 'z'))
-		{
-			printf("Command doesnt exist\n");
-			return (1);
-		}
+		p->commands[i] = ft_split(commands[i + 2], ' ');
+		if (!p->commands[i])
+			end_pipex(p, 2, "Memory allocation failled");
+		p->full_command[i] = command_check(p, p->commands[i][0]);
 		i++;
 	}
-	return (0);
+}
+
+char *command_check(t_p *p, char *command)
+{
+    int i = 0;
+    char *full_path;
+
+    if (!access(command, F_OK | X_OK))
+        return ft_strdup(command);
+    while (p->paths[i])
+    {
+        full_path = ft_strjoin(p->paths[i], "/");
+        full_path = ft_strjoin(full_path, command);
+        if (!access(full_path, F_OK | X_OK))
+            return full_path;
+        free(full_path);
+        i++;
+    }
+ 	write (2, "Command not found\n", 18);
+    exit(EXIT_FAILURE);
 }

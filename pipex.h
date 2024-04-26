@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 18:02:33 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/23 14:30:47 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/26 15:30:16 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,31 +29,25 @@ typedef struct s_p
 	int				outfile;
 	int				pipe[2];
 	int				id;
-	pid_t			pid;
+	int				pid;
 	int				cmd_nbr;
-	char			**path;
-	char			*cmd_path;
-	char			**cmd;
-	char			*env;
-	int				here_doc;
-	char			**args;
+	char			**envp;
+	char			**paths;
+	char			**full_command;
+	char			***commands;
 }		t_p;
 
-void			free_paths(char **str);
-void			find_path(t_p *p, char **envp);
-void			find_cmd_path(t_p *p, char **av, char **envp);
-void			get_cmd(t_p *p, char *tmp);
-int				check_file_permission(const char *file);
-int				check_command(char *command);
-void			here_doc(char **av, int file);
-void			append(t_p *p, int ac, char **av);
-void			redirect(t_p *p, int ac, char **av);
-void			parsing(t_p *p, int ac, char **av);
-void			child_work(t_p *p, char **envp);
-void			child_redirect(t_p *p);
-void			free_all(t_p *p);
-void			err(t_p *p, char *str);
 int				main(int ac, char **av, char **envp);
-
+int				find_path(t_p *p, char **envp);
+char 			*command_check(t_p *p, char *command);
+void			free_commands(char ***commands);
+void			free_array(char **str);
+void			end_pipex(t_p *p, int exit_status, char *str);
+void			init_pipex(int ac, char **av, t_p *p, char **envp);
+void			get_commands(int size, t_p *p, char **commands);
+char			**ft_here_doc(char *str, char *LIMITER, int line);
+void			ft_init_here_doc(t_p *p, char *LIMITER, char *outfile);
+void			child_work(t_p *p);
+void			child_redirect(t_p *p, int index);
 
 #endif
