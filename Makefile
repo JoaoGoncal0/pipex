@@ -2,6 +2,8 @@ NAME = pipex
 
 LIBFT = libft/libft.a
 
+PRINTF = ft_printf/libftprintf.a
+
 CC = cc -Wall -Werror -Wextra
 
 RM = rm -f
@@ -20,16 +22,21 @@ all: $(NAME)
 $(LIBFT):
 	@make -C ./libft
 
-$(NAME):	$(OBJ) $(LIBFT)
-			$(CC) $(OBJ) $(LIBFT) -o $(NAME)
+$(PRINTF):
+	@make -s -C ./ft_printf
+
+$(NAME):	$(OBJ) $(LIBFT) $(PRINTF)
+			$(CC) $(OBJ) $(LIBFT) $(PRINTF) -o $(NAME)
 			@echo "$(NAME) created"
 
 clean:
 	@make -C ./libft clean --no-print-directory
-
+	@make -C ./ft_printf clean --no-print-directory
+	
 fclean:		clean
 				@$(RM) $(NAME)
 				@$(RM) $(LIBFT)
+				@$(RM) $(PRINTF)
 				@$(RM) *.o
 				@echo "$(NAME) deleted"
 

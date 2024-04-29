@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 18:02:33 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/26 15:30:16 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/29 19:10:51 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "libft/libft.h"
 # include "get_next_line/get_next_line_bonus.h"
+# include "ft_printf/ft_printf.h"
 # include <errno.h>
 # include <fcntl.h>
 # include <math.h>
@@ -22,6 +23,7 @@
 # include <string.h>
 # include <sys/wait.h>
 # include <sys/types.h>
+# include <limits.h>
 
 typedef struct s_p
 {
@@ -29,7 +31,7 @@ typedef struct s_p
 	int				outfile;
 	int				pipe[2];
 	int				id;
-	int				pid;
+	pid_t			pid;
 	int				cmd_nbr;
 	char			**envp;
 	char			**paths;
@@ -48,6 +50,6 @@ void			get_commands(int size, t_p *p, char **commands);
 char			**ft_here_doc(char *str, char *LIMITER, int line);
 void			ft_init_here_doc(t_p *p, char *LIMITER, char *outfile);
 void			child_work(t_p *p);
-void			child_redirect(t_p *p, int index);
+void			child_redirect(t_p *p, int *out_pipe, int index);
 
 #endif
