@@ -6,11 +6,19 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 15:55:23 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/26 15:31:35 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/30 18:47:50 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+
+void	parse_error(t_p *p)
+{
+	write (2, "Error\n", 6);
+	free(p);
+	exit(EXIT_FAILURE);
+}
 
 void	free_array(char **str)
 {
@@ -52,5 +60,8 @@ void	end_pipex(t_p *p, int exit_status, char *str)
 	free_array(p->paths);
 	free_array(p->full_command);
 	free_commands(p->commands);
+	close(p->infile);
+	close(p->outfile);
+	free(p);
 	exit(exit_status);
 }

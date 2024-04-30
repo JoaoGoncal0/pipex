@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 16:41:29 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/29 18:17:25 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/30 18:48:29 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,16 @@ void	init_pipex(int ac, char **av, t_p *p, char **envp)
 
 	i = 0;
 	if (ac < 5)
-		end_pipex(p, 1, "Wrong augments\n");
+		parse_error(p);
 	p->cmd_nbr = ac - 3;
+	p->heredoc = 0;
 	if (ft_strncmp(av[1], "here_doc", ft_strlen(av[1])) == 0)
 		ft_init_here_doc(p, av[2], av[ac - 1]);	
 	else
 	{
 		p->infile = open(av[1], O_RDONLY);
 		if (p->infile < 0)
-			write (2, "No such file or directory\n", 26);
+			parse_error(p);
 		p->outfile = open(av[ac - 1], O_TRUNC | O_CREAT | O_RDWR, 0644);
 		if (p->outfile < 0)
 			end_pipex(p, 1, "Could't open the outfile");
@@ -59,9 +60,9 @@ void	get_commands(int size, t_p *p, char **commands)
 	p->full_command = ft_calloc(sizeof(char *), (size - 3 + 1));
 	size--;
 	i = 0;
-	while ((i + 2) < size)
+	while ((i + 2 + p->heredoc) < size)
 	{
-		p->commands[i] = ft_split(commands[i + 2], ' ');
+		p->commands[i] = ft_split(commands[i + 2 + p->heredoc], ' ');
 		if (!p->commands[i])
 			end_pipex(p, 2, "Memory allocation failled");
 		p->full_command[i] = command_check(p, p->commands[i][0]);
@@ -86,5 +87,6 @@ char *command_check(t_p *p, char *command)
         i++;
     }
  	write (2, "Command not found\n", 18);
-    exit(EXIT_FAILURE);
+    end_pipex(p, 4, "Error\n");
+	exit(EXIT_FAILURE);
 }

@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 11:46:40 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/29 18:19:34 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/30 13:59:25 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	ft_init_here_doc(t_p *p, char *LIMITER, char *outfile)
 	char	**input;
 	int	i;
 
+	p->heredoc = 1;
 	ft_printf("pipe heredoc> ");
 	input = ft_here_doc(get_next_line(0), LIMITER, 0);
 	pipe(p->pipe);
@@ -49,7 +50,7 @@ void	ft_init_here_doc(t_p *p, char *LIMITER, char *outfile)
 	close(p->pipe[1]);
 	free(input);
 	p->infile = p->pipe[0];
-	p->outfile = open(outfile, O_CREAT | O_WRONLY, 0644);
+	p->outfile = open(outfile, O_TRUNC | O_CREAT | O_WRONLY, 0644);
 	if (p->outfile < 0)
 		end_pipex(p, 1, "Coudln't open Outfile");
 }

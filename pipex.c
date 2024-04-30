@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 18:02:49 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/29 19:38:41 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/04/30 18:18:08 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,14 @@ void	child_redirect(t_p *p, int *out_pipe, int index)
 	if (p->full_command[index + 1])
 	{
 		dup2(out_pipe[1], STDOUT_FILENO);
-		close(out_pipe[0]);
+		// close(out_pipe[0]);
 	}
 	else
-		dup2(p->outfile, STDOUT_FILENO);	
+		dup2(p->outfile, STDOUT_FILENO);
 	execve(p->full_command[index], p->commands[index], p->envp);
-	end_pipex(p, 0, "");
+	perror("execve");
+	exit(EXIT_FAILURE);
+	
 }
 
 
@@ -44,14 +46,15 @@ void	child_work(t_p *p)
 			child_redirect(p, p->pipe, i);
 		else
 		{
-			close(tmp_infile);
 			close(p->pipe[1]);
+			close(tmp_infile);
 			tmp_infile = p->pipe[0];
 			wait(0);
 		}
 		i++;
 	}
 	close(p->pipe[0]);
+	close(p->outfile);
 }
 
 void	print_commands(t_p *p)
@@ -71,11 +74,19 @@ void	print_commands(t_p *p)
 	}
 }
 
-void	sleeping(t_p *p)
+int	main(int ac, char **av, char **envp)
 {
-	int i = 0;
+	t_p	*p;
+	int i;
 	int max_sleep;
 	int max_sleep_index = -1;
+	
+	i = 0;
+	p = malloc(sizeof(t_p));
+	init_pipex(ac, av, p, envp);
+	if (find_path(p, envp) != 0)
+		end_pipex(p, 5, "Failed to find Path");
+	get_commands(ac, p, av);
 	while (p->commands[i])
 	{
 		if (ft_strncmp(p->commands[i][0], "sleep", 6) == 0)
@@ -90,39 +101,13 @@ void	sleeping(t_p *p)
 		i++;
 	}
 	if (max_sleep_index != -1)
+	{
 		execve(p->full_command[max_sleep_index], p->commands[max_sleep_index], p->envp);
-}
-
-
-int	main(int ac, char **av, char **envp)
-{
-	t_p	*p;
-	int i;
-	
-	i = 0;
-	p = malloc(sizeof(t_p));
-	init_pipex(ac, av, p, envp);
-	if (find_path(p, envp) != 0)
-		end_pipex(p, 5, "Failed to find Path");
-	get_commands(ac, p, av);
+		printf("Maior tempo de espera: %d\n", max_sleep);
+	}
 	print_commands(p);
-	sleeping(p);
-	// while (p->commands[i])
-	// {
-	// 	if (ft_strncmp(p->commands[i][0], "sleep", 6) == 0)
-	// 	{
-	// 		int sleep_time = atoi(p->commands[i][1]);
-	// 		if (sleep_time > max_sleep)
-	// 		{
-	// 			max_sleep = sleep_time;
-	// 			max_sleep_index = i;
-	// 		}
-	// 	}
-	// 	i++;
-	// }
-	// if (max_sleep_index != -1)
-	// 	execve(p->full_command[max_sleep_index], p->commands[max_sleep_index], p->envp);
 	child_work(p);
 	end_pipex(p, 0, "");
 	return (0);
 }
+
