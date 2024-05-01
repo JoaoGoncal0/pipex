@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 16:41:29 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/30 18:48:29 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/05/01 12:47:47 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void	get_commands(int size, t_p *p, char **commands)
 		if (!p->commands[i])
 			end_pipex(p, 2, "Memory allocation failled");
 		p->full_command[i] = command_check(p, p->commands[i][0]);
+		printf("full command = %s\n", p->full_command[i]);
 		i++;
 	}
 }
@@ -76,17 +77,23 @@ char *command_check(t_p *p, char *command)
     char *full_path;
 	char *tmp;
 
+	if (access(command, F_OK | X_OK) == 0)
+	{
+		printf("commando = %s\n", command);
+		return ft_strdup(command);
+	}
+	printf("commando = %s\n", command);
     while (p->paths[i])
     {
-        tmp = ft_strjoin(p->paths[i], "/");
-        full_path = ft_strjoin(tmp, command);
+    	tmp = ft_strjoin(p->paths[i], "/");
+    	full_path = ft_strjoin(tmp, command);
 		free(tmp);
-        if (access(full_path, F_OK | X_OK) == 0)
-            return full_path;
-        free(full_path);
-        i++;
+    	if (access(full_path, F_OK | X_OK) == 0)
+    	    return full_path;
+    	free(full_path);
+    	i++;
     }
  	write (2, "Command not found\n", 18);
-    end_pipex(p, 4, "Error\n");
+   	end_pipex(p, 4, "Error\n");
 	exit(EXIT_FAILURE);
 }

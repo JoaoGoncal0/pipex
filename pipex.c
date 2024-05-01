@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 18:02:49 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/30 18:18:08 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/05/01 12:56:29 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int	main(int ac, char **av, char **envp)
 	{
 		if (ft_strncmp(p->commands[i][0], "sleep", 6) == 0)
 		{
-			int sleep_time = atoi(p->commands[i][1]);
+			int sleep_time = ft_atoi(p->commands[i][1]);
 			if (sleep_time > max_sleep)
 			{
 				max_sleep = sleep_time;
