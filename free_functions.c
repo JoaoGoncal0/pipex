@@ -6,12 +6,11 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 15:55:23 by jomendes          #+#    #+#             */
-/*   Updated: 2024/05/01 12:35:06 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/05/02 15:00:14 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
 
 void	parse_error(t_p *p)
 {

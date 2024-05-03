@@ -6,7 +6,7 @@
 /*   By: jomendes <jomendes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 11:46:40 by jomendes          #+#    #+#             */
-/*   Updated: 2024/04/30 13:59:25 by jomendes         ###   ########.fr       */
+/*   Updated: 2024/05/02 17:26:23 by jomendes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@ char	**ft_here_doc(char *str, char *LIMITER, int line)
 	char	**input_here_doc;
 
 	input_here_doc = NULL;
-	if (ft_strncmp(str, LIMITER, ft_strlen(LIMITER)) == 0 && (str[ft_strlen(LIMITER)] == '\n'))
+	if (ft_strncmp(str, LIMITER, ft_strlen(LIMITER)) == 0 \
+	&& (str[ft_strlen(LIMITER)] == '\n'))
 	{
-		input_here_doc = ft_calloc(sizeof(char *), (line + 2));
+		input_here_doc = ft_calloc(sizeof(char *), (line + 1));
 		free(str);
 	}
 	else
@@ -34,7 +35,7 @@ char	**ft_here_doc(char *str, char *LIMITER, int line)
 void	ft_init_here_doc(t_p *p, char *LIMITER, char *outfile)
 {
 	char	**input;
-	int	i;
+	int		i;
 
 	p->heredoc = 1;
 	ft_printf("pipe heredoc> ");
